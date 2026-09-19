@@ -1,0 +1,19 @@
+# local dev / assistant workspace
+.workbuddy/
+
+# local-only dev notes (not published)
+docs/
+
+# OS junk
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# editor
+.vscode/
+.idea/
+*.swp
+
+# build artifacts (none expected — zero-dependency project)
+*.zip
+*.crx

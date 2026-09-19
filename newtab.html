@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>书签台</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="clock-block">
+      <span class="clock" id="clock">--:--</span>
+      <span class="date" id="date">----年--月--日</span>
+    </div>
+
+    <div class="search-block">
+      <input id="search" type="text" placeholder="在书签里查找…" autocomplete="off" spellcheck="false">
+      <span class="search-count" id="searchCount"></span>
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </div>
+
+    <div class="action-block">
+      <button id="heatmapBtn" class="ghost-btn icon-btn" title="点击热力图:按天统计书签点击数">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <rect x="3" y="3" width="5" height="5" rx="1" opacity=".3"/>
+          <rect x="10" y="3" width="5" height="5" rx="1" opacity=".65"/>
+          <rect x="17" y="3" width="5" height="5" rx="1" opacity="1"/>
+          <rect x="3" y="10" width="5" height="5" rx="1" opacity=".5"/>
+          <rect x="10" y="10" width="5" height="5" rx="1" opacity=".8"/>
+          <rect x="17" y="10" width="5" height="5" rx="1" opacity=".4"/>
+          <rect x="3" y="17" width="5" height="5" rx="1" opacity=".75"/>
+          <rect x="10" y="17" width="5" height="5" rx="1" opacity=".55"/>
+          <rect x="17" y="17" width="5" height="5" rx="1" opacity=".9"/>
+        </svg>
+      </button>
+      <button id="editModeBtn" class="ghost-btn icon-btn" title="编辑模式:改名 / 删除书签">
+        <svg class="ico-edit" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+        </svg>
+        <svg class="ico-exit" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <button id="settingsBtn" class="ghost-btn icon-btn" title="设置">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+      <button id="importBtn" class="ghost-btn" title="从导出的书签 HTML 文件导入">导入书签</button>
+      <input type="file" id="importFile" accept=".html,text/html" hidden>
+    </div>
+  </header>
+
+  <nav class="drawer-tabs" id="drawerTabs" aria-label="书签文件夹">
+    <div class="tabs-visible" id="tabsVisible"></div>
+    <div class="tabs-more-wrap" id="tabsMoreWrap" hidden>
+      <div class="tabs-more-clip">
+        <button type="button" id="tabsMoreBtn" class="tab-btn tab-more-btn"></button>
+      </div>
+      <div class="tabs-more-menu" id="tabsMoreMenu" hidden></div>
+    </div>
+  </nav>
+
+  <main class="drawer" id="drawer">
+    <div class="empty-state" id="emptyState" hidden>
+      <p class="empty-title">这个抽屉是空的</p>
+      <p class="empty-sub">选中的文件夹下还没有书签,换一个抽屉看看,或点右上角「导入书签」补充。</p>
+    </div>
+    <div class="loading-state" id="loadingState">
+      <p>正在读取书签…</p>
+    </div>
+    <div class="groups" id="groups"></div>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <div class="heatmap-overlay" id="heatmapOverlay" hidden>
+    <div class="heatmap-panel" role="dialog" aria-modal="true" aria-labelledby="heatmapTitle">
+      <div class="settings-header">
+        <span class="settings-title" id="heatmapTitle">点击热力图</span>
+        <button class="settings-close" id="heatmapClose" aria-label="关闭热力图">×</button>
+      </div>
+      <p class="heatmap-stats" id="heatmapStats"></p>
+      <div class="heatmap-grid" id="heatmapGrid"></div>
+      <div class="heatmap-footer">
+        <span>少</span>
+        <span class="heat-legend">
+          <i class="heat-cell" data-level="1"></i>
+          <i class="heat-cell" data-level="2"></i>
+          <i class="heat-cell" data-level="3"></i>
+          <i class="heat-cell" data-level="4"></i>
+        </span>
+        <span>多</span>
+        <span class="heatmap-hint">每周一开始,悬停看当天次数</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-overlay" id="settingsOverlay" hidden>
+    <div class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="settings-header">
+        <span class="settings-title" id="settingsTitle">设置</span>
+        <button class="settings-close" id="settingsClose" aria-label="关闭设置">×</button>
+      </div>
+
+      <div class="settings-section">
+        <span class="settings-label">主题</span>
+        <div class="segmented" id="themeSegmented">
+          <button type="button" data-mode="system">跟随系统</button>
+          <button type="button" data-mode="light">亮色</button>
+          <button type="button" data-mode="dark">暗色</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <span class="settings-label">主题色</span>
+        <div class="accent-picker" id="accentPicker">
+          <button type="button" class="accent-swatch" data-accent="orange" title="印鉴橙"></button>
+          <button type="button" class="accent-swatch" data-accent="green" title="墨绿"></button>
+          <button type="button" class="accent-swatch" data-accent="blue" title="靛蓝"></button>
+          <button type="button" class="accent-swatch" data-accent="red" title="砖红"></button>
+          <button type="button" class="accent-swatch" data-accent="purple" title="紫"></button>
+          <button type="button" class="accent-swatch" data-accent="teal" title="青绿"></button>
+        </div>
+        <p class="settings-hint">强调色会随亮 / 暗主题自动切换为对应明度的变体。</p>
+      </div>
+
+      <div class="settings-section">
+        <span class="settings-label">中文字体</span>
+        <div class="cn-font-picker">
+          <button type="button" class="settings-select cn-font-trigger" id="cnFontTrigger"></button>
+          <div class="cn-font-menu" id="cnFontMenu" hidden></div>
+        </div>
+        <p class="settings-hint">从系统中检测到的中文字体,选择后立即生效;未选时跟随系统。</p>
+      </div>
+
+      <div class="settings-section">
+        <span class="settings-label">回车搜索引擎</span>
+        <select id="engineSelect" class="settings-select">
+          <option value="google">Google</option>
+          <option value="bing">必应</option>
+          <option value="baidu">百度</option>
+          <option value="duckduckgo">DuckDuckGo</option>
+          <option value="custom">自定义…</option>
+        </select>
+        <div id="customEngineFields" hidden>
+          <input type="text" id="customEngineName" class="settings-input" placeholder="引擎名称,例如「公司内网搜索」">
+          <input type="text" id="customEngineUrl" class="settings-input" placeholder="URL 模板,用 {q} 表示搜索词">
+          <p class="settings-hint">例如:https://www.example.com/search?q={q}</p>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="toggle-row">
+          <div>
+            <span class="settings-label" style="margin-bottom:2px">常用书签高亮</span>
+            <p class="settings-hint" style="margin-top:0">按点击次数给卡片加深底色,点得越多越显眼,方便一眼找到常用书签。</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="heatmapToggle">
+            <span class="track"><span class="thumb"></span></span>
+          </label>
+        </div>
+        <button type="button" class="ghost-btn" id="resetHeatBtn">清空点击统计</button>
+      </div>
+
+      <div class="settings-section">
+        <div class="toggle-row">
+          <div>
+            <span class="settings-label" style="margin-bottom:2px">最常访问栏</span>
+            <p class="settings-hint" style="margin-top:0">按点击次数把常用书签展示在最上方。浏览时悬停点 × 隐藏;编辑模式下可恢复。</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="picksToggle">
+            <span class="track"><span class="thumb"></span></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <span class="settings-label">链接检测</span>
+        <p class="settings-hint" style="margin-top:0">逐个访问书签的网址,标出打不开的失效链接。结果会缓存 6 小时,重复点击只检测过期或没测过的部分。</p>
+        <div class="toggle-row" style="margin-bottom:10px">
+          <span class="settings-hint" style="margin-top:0">忽略缓存,强制重新检测全部</span>
+          <label class="switch">
+            <input type="checkbox" id="forceRecheckToggle">
+            <span class="track"><span class="thumb"></span></span>
+          </label>
+        </div>
+        <button type="button" class="ghost-btn" id="checkLinksBtn">开始检测</button>
+        <p class="settings-hint" id="checkProgress"></p>
+        <p class="settings-hint" id="checkSummary"></p>
+        <p class="settings-hint">失效标记只在编辑模式(顶部铅笔图标)里显示,平常浏览不会看到虚线红框。</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
