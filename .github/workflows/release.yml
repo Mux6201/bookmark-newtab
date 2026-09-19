@@ -1,0 +1,31 @@
+name: Release
+
+# 推送 v* 标签时自动打包扩展并发布 Release;也可在 Actions 页手动触发
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package extension
+        run: |
+          mkdir -p dist/bookmark-newtab
+          cp manifest.json newtab.html dist/bookmark-newtab/
+          cp -r css js icons dist/bookmark-newtab/
+          # zip 内容放在根目录,符合 Chrome Web Store 上传要求
+          cd dist/bookmark-newtab
+          zip -r "../../bookmark-newtab-${GITHUB_REF_NAME}.zip" .
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: bookmark-newtab-*.zip
