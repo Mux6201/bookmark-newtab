@@ -4,6 +4,10 @@
 
 > 仅中文界面 · 目标浏览器:Chrome / Edge 等 Chromium 内核
 
+| 亮色主题 | 暗色主题 |
+| --- | --- |
+| ![亮色主题](assets/screenshot-light.png) | ![暗色主题](assets/screenshot-dark.png) |
+
 ---
 
 ## 目录
